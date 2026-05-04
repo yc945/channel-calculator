@@ -23,19 +23,27 @@ jobs:
       with:
         python-version: '3.10'
     
-    - name: Install and Build
+    - name: Install Flet
       run: |
-        # 安装 flet
         pip install flet
+    
+    - name: Accept Android Licenses
+      run: |
+        yes | flutter doctor --android-licenses || true
+    
+    - name: Build APK
+      run: |
+        echo "y" | flet build apk || true
         
-        # 预先安装 flutter 依赖
-        flutter doctor --android-licenses -y
-        
-        # 构建 APK（自动应答）
-        echo "y" | flet build apk
-        
+    - name: Find and Upload APK
+      run: |
+        find . -name "*.apk" -exec cp {} app.apk \;
+      continue-on-error: true
+      
     - name: Upload APK
       uses: actions/upload-artifact@v4
       with:
         name: app-release
-        path: build/apk/*.apk
+        path: |
+          **/*.apk
+          app.apk
