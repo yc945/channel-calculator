@@ -51,7 +51,7 @@ jobs:
           find ~/.buildozer -name "sdkmanager" 2>/dev/null | head -1 | xargs -I{} sh -c 'yes | {} --licenses' 2>/dev/null || true
 
       - name: Build APK
-        run: buildozer android debug 2>&1 | tail -200
+        run: buildozer android debug 2>&1 | tee build.log; grep -E "ERROR|Build failed" build.log | tail -20 || true
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
